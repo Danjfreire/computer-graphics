@@ -30,4 +30,20 @@ public class Vector3Operations {
 
         return this.addition(entry1, negativeEntry2);
     }
+
+    public double dotProduct(Vector3 entry1, Vector3 entry2){
+        double xProduct = entry1.getX() * entry2.getX();
+        double yProduct = entry1.getY() * entry2.getY();
+        double zProduct = entry1.getZ() * entry2.getZ();
+
+        return xProduct + yProduct + zProduct;
+    }
+
+    public Vector3 crossProduct(Vector3 entry1, Vector3 entry2){
+        double xProduct = (entry1.getY()*entry2.getZ()) - (entry1.getZ()*entry2.getY());
+        double yProduct = (entry1.getZ()*entry2.getX()) - (entry1.getX()*entry2.getZ());
+        double zProduct = (entry1.getX()*entry2.getY()) - (entry1.getY()*entry2.getX());
+
+        return new Vector3(xProduct,yProduct,zProduct);
+    }
 }
