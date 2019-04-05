@@ -14,6 +14,20 @@ public class Vector3Operations {
         return instance;
     }
 
+    public double vectorNorm(Vector3 entry){
+        double x2 = Math.pow(entry.getX(),2);
+        double y2 = Math.pow(entry.getY(),2);
+        double z2 = Math.pow(entry.getZ(),2);
+        double norm = Math.sqrt(x2 + y2+ z2);
+        return norm;
+    }
+
+    public Vector3 normalizeVector(Vector3 entry){
+        double norm = vectorNorm(entry);
+        Vector3 normalizedVector = new Vector3(entry.getX()/norm, entry.getY()/norm, entry.getZ()/norm);
+        return normalizedVector;
+    }
+
     public Vector3 addition(Vector3 entry1, Vector3 entry2){
         Vector3 result = new Vector3();
         result.setX(entry1.getX() + entry2.getX());
