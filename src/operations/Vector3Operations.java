@@ -60,4 +60,29 @@ public class Vector3Operations {
 
         return new Vector3(xProduct,yProduct,zProduct);
     }
+
+    public Vector3 barycentricCoordinates(Vector3 P, Vector3 A, Vector3 B, Vector3 C){
+
+        double abcArea = triangleArea(A,B,C);
+        double u = triangleArea(P,B,C)/abcArea;
+        double v = triangleArea(A,P,C)/abcArea;
+        double w = triangleArea(A,B,P)/abcArea;
+
+        return new Vector3(u,v,w);
+    }
+    public Vector3 barycentricReverse(Vector3 barycentricCords, Vector3 A, Vector3 B, Vector3 C){
+        double px = (barycentricCords.getX() * A.getX()) + (barycentricCords.getY() * B.getX()) + (barycentricCords.getZ() * C.getX());
+        double py = (barycentricCords.getX() * A.getY()) + (barycentricCords.getY() * B.getY()) + (barycentricCords.getZ() * C.getY());
+
+        return new Vector3(px,py,0);
+    }
+
+    private double triangleArea(Vector3 entry1, Vector3 entry2, Vector3 entry3){
+        double p1 = entry1.getX() * (entry2.getY() - entry3.getY());
+        double p2 = entry2.getX() * (entry3.getY() - entry1.getY());
+        double p3 = entry3.getX() * (entry1.getY() - entry2.getY());
+        double area = (p1+p2+p3)/2;
+
+        return area;
+    }
 }

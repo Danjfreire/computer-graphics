@@ -29,11 +29,11 @@ public class Test {
         System.out.println(result2);
 
         System.out.println("c)");
-        double result3 = Vector3Operations.getInstance().dotProduct(new Vector3(1,2,3), new Vector3(1,5,7));
+        double result3 = Vector3Operations.getInstance().dotProduct(new Vector3(3.5,1.5,2.0), new Vector3(1,2,1.5));
         System.out.println(result3);
 
         System.out.println("d)");
-        Vector3 result4 = Vector3Operations.getInstance().crossProduct(new Vector3(1,2,1), new Vector3(1,0,-1));
+        Vector3 result4 = Vector3Operations.getInstance().crossProduct(new Vector3(3.5,1.5,2), new Vector3(1,2,1.5));
         System.out.println(result4);
 
         System.out.println("e)");
@@ -43,5 +43,13 @@ public class Test {
         System.out.println("f)");
         Vector3 result6 = Vector3Operations.getInstance().normalizeVector(new Vector3(3.5,1.5,2));
         System.out.println(result6);
+
+        System.out.println("g)");
+        Vector3 result7 = Vector3Operations.getInstance().barycentricCoordinates(new Vector3(-0.25,0.75,0), new Vector3(-1,1,0), new Vector3(0,-1,0), new Vector3(1,1,0));
+        System.out.println(result7);
+
+        System.out.println("h)");
+        Vector3 result8 = Vector3Operations.getInstance().barycentricReverse(new Vector3(0.5,0.25,0.25),new Vector3(-1,1,0), new Vector3(0,-1,0), new Vector3(1,1,0));
+        System.out.println(result8);
     }
 }
