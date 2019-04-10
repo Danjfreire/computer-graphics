@@ -33,8 +33,6 @@ public class DrawPanel extends JPanel {
         Dimension size = getSize();
         int w = size.width ;
         int h = size.height;
-        System.out.println("width:" + w);
-        System.out.println("height:" + h);
 
         for(Vector3 vector : vectors){
             int x = normalizeX(vector.getX(), w,h).intValue();

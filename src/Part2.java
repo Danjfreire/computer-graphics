@@ -7,7 +7,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class InputReader {
+public class Part2 {
 
     public static void main(String args[]){
         int vertNum;
@@ -17,7 +17,6 @@ public class InputReader {
         try{
             reader = new BufferedReader(new FileReader("./src/input/vaso.BYU"));
             String line = reader.readLine();
-//            System.out.println(line);
             String[] line1 = line.split(" ");
             vertNum = Integer.parseInt(line1[0]);
             triangleNum = Integer.parseInt(line1[1]);
@@ -25,7 +24,6 @@ public class InputReader {
             String[] splitLine;
             line = reader.readLine();
             while(line != null){
-//                System.out.println(line);
                 splitLine = line.split(" ");
                 if(aux < vertNum){
                     vectors.add(new Vector3(Double.parseDouble(splitLine[0]),Double.parseDouble(splitLine[1]),Double.parseDouble(splitLine[2])));
@@ -41,7 +39,7 @@ public class InputReader {
         JFrame frame = new JFrame("Drawing");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.add(panel);
-        frame.setSize(500, 500);
+        frame.setSize(300, 280);
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
     }

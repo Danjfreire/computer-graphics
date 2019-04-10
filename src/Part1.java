@@ -1,11 +1,11 @@
-package models;
-
+import models.Matrix;
+import models.Vector3;
 import operations.MatrixOperations;
 import operations.Vector3Operations;
 
 import java.util.Vector;
 
-public class Test {
+public class Part1 {
     public static  void main(String[]args){
 
         System.out.println("a) ");
@@ -52,4 +52,6 @@ public class Test {
         Vector3 result8 = Vector3Operations.getInstance().barycentricReverse(new Vector3(0.5,0.25,0.25),new Vector3(-1,1,0), new Vector3(0,-1,0), new Vector3(1,1,0));
         System.out.println(result8);
     }
+
+
 }
