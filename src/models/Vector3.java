@@ -1,6 +1,6 @@
 package models;
 
-public class Vector3 {
+public class Vector3 implements Comparable<Vector3>{
     private double x;
     private double y;
     private double z;
@@ -44,5 +44,16 @@ public class Vector3 {
     @Override
     public String toString(){
         return "("+this.x+", " + this.y + ", " + this.z +")";
+    }
+
+    @Override
+    public int compareTo(Vector3 v2) {
+        if(this.getY() < v2.getY()){
+            return -1;
+        }
+        if(this.getY() > v2.getY()){
+            return 1;
+        }
+        return 0;
     }
 }

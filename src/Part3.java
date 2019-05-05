@@ -4,6 +4,7 @@ import models.Matrix;
 import models.Triangle;
 import models.Vector3;
 import operations.MatrixOperations;
+import operations.ScanLine;
 import operations.Vector3Operations;
 
 import javax.swing.*;
@@ -16,14 +17,18 @@ import java.util.List;
 
 public class Part3 {
 
+    private static int xMin;
+    private static int xMax;
+    private static int yMin;
+    private static int yMax;
+
     private static int vertNum;
     private static List<Vector3> vectors = new ArrayList<>();
     private static List<Triangle> triangles = new ArrayList<>();
-    private static int width = 500;
-    private static int height = 500;
+    private static int width = 600;
+    private static int height = 600;
 
     public static void main(String args[]) throws IOException {
-
         BufferedReader reader;
         try {
             reader = new BufferedReader(new FileReader("./src/input/calice2.BYU"));
@@ -48,12 +53,20 @@ public class Part3 {
         }
         // load camera params
         while (true) {
+            ScanLine scanline = new ScanLine();
             CameraParams cameraParams = loadCameraParams();
             Matrix basisChangeMatrix = getBasisChangeMatrix(cameraParams);
             List<Vector3> viewVectors = worldToView(basisChangeMatrix, cameraParams.getC());
             List<Vector3> projectedVectors = projectVectors(cameraParams, viewVectors);
 
-            DrawPanel panel = new DrawPanel(projectedVectors, findMinMax(projectedVectors));
+            List<Vector3> rasterizedVectors = scanline.rasterize(triangles, projectedVectors, width, height);
+//            System.out.println(rasterizedVectors.size());
+
+//            for(Vector3 v : rasterizedVectors){
+//                System.out.println(v);
+//            }
+
+            DrawPanel panel = new DrawPanel(rasterizedVectors);
             JFrame frame = new JFrame("Drawing");
             frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
             frame.add(panel);
@@ -69,17 +82,17 @@ public class Part3 {
         double xs;
         double ys;
         List<Vector3> projectedVectors = new ArrayList<>();
-        for(Vector3 v : viewVectors ){
-            xs = cameraParams.getD() * (v.getX()/v.getZ());
-            ys = cameraParams.getD() * (v.getY()/v.getZ());
+        for (Vector3 v : viewVectors) {
+            xs = cameraParams.getD() * (v.getX() / v.getZ());
+            ys = cameraParams.getD() * (v.getY() / v.getZ());
 
-            xs = xs/cameraParams.getHx();
-            ys = ys/cameraParams.getHy();
+            xs = xs / cameraParams.getHx();
+            ys = ys / cameraParams.getHy();
 
-            xs = ((xs + 1)/2) * width + 0.5;
-            ys = (height - (ys+1)/2) * height + 0.5;
+            xs = ((xs + 1) / 2) * width + 0.5;
+            ys = height - ((ys + 1) / 2) * height + 0.5;
 
-            projectedVectors.add(new Vector3(xs,ys,0));
+            projectedVectors.add(new Vector3(xs, ys, 0));
         }
 
         return projectedVectors;
@@ -87,13 +100,13 @@ public class Part3 {
 
     private static List<Vector3> worldToView(Matrix basisChangeMatrix, Vector3 C) {
         List<Vector3> viewVectors = new ArrayList<>();
-        Matrix m = new Matrix(3,1);
+        Matrix m = new Matrix(3, 1);
         Vector3 subtraction;
         Matrix changeResult;
 
-        for(Vector3 P : vectors){
+        for (Vector3 P : vectors) {
             subtraction = Vector3Operations.getInstance().subtraction(P, C);
-            m.setMatrix(new double[][]{{subtraction.getX()},{subtraction.getY()},{subtraction.getZ()}});
+            m.setMatrix(new double[][]{{subtraction.getX()}, {subtraction.getY()}, {subtraction.getZ()}});
             changeResult = MatrixOperations.getInstance().matrixMultiplication(basisChangeMatrix, m);
             viewVectors.add(new Vector3(changeResult.getMatrix()[0][0], changeResult.getMatrix()[1][0], changeResult.getMatrix()[2][0]));
         }
@@ -105,7 +118,7 @@ public class Part3 {
         Vector3 Vline = Vector3Operations.getInstance().orthogonalize(params.getV(), params.getN());
 
         //CALCULATE U
-        Vector3 U = Vector3Operations.getInstance().getU(params.getN(),Vline);
+        Vector3 U = Vector3Operations.getInstance().getU(params.getN(), Vline);
 
         //NORMALIZE PARAMS
         Vector3 normVline = Vector3Operations.getInstance().normalizeVector(Vline);
@@ -113,7 +126,7 @@ public class Part3 {
         Vector3 normU = Vector3Operations.getInstance().normalizeVector(U);
 
         //CREATE BASIS CHANGE MATRIX
-        Matrix m1 = new Matrix(3,3);
+        Matrix m1 = new Matrix(3, 3);
         m1.setRow(normU, 0);
         m1.setRow(normVline, 1);
         m1.setRow(normN, 2);
@@ -125,32 +138,46 @@ public class Part3 {
         CameraParams cParams = new CameraParams();
         BufferedReader reader = new BufferedReader(new FileReader("./src/camera-input/input.txt"));
         String line = reader.readLine();
-        while(line != null){
+        while (line != null) {
             cParams.addParam(line);
             line = reader.readLine();
         }
         return cParams;
     }
 
-    private static int[] findMinMax(List<Vector3> vectors) {
-        Double xMin = Double.MAX_VALUE;
-        Double xMax = Double.MIN_VALUE;
-        Double yMin = Double.MAX_VALUE;
-        Double yMax = Double.MIN_VALUE;
+    private static void findMinMax(List<Vector3> vectors) {
+        Double xMinAux = Double.MAX_VALUE;
+        Double xMaxAux = Double.MIN_VALUE;
+        Double yMinAux = Double.MAX_VALUE;
+        Double yMaxAux = Double.MIN_VALUE;
 
         for (Vector3 vector : vectors) {
-            if (vector.getX() < xMin)
-                xMin = vector.getX();
-            if (vector.getX() > xMax)
-                xMax = vector.getX();
-            if (vector.getY() < yMin)
-                yMin = vector.getY();
-            if (vector.getY() > yMax)
-                yMax = vector.getY();
+            if (vector.getX() < xMinAux)
+                xMinAux = vector.getX();
+            if (vector.getX() > xMaxAux)
+                xMaxAux = vector.getX();
+            if (vector.getY() < yMinAux)
+                yMinAux = vector.getY();
+            if (vector.getY() > yMaxAux)
+                yMaxAux = vector.getY();
         }
 
-        int[] minMax = {xMin.intValue(), xMax.intValue(), yMin.intValue(), yMax.intValue()};
-        return minMax;
+        xMin = xMinAux.intValue();
+        xMax = xMaxAux.intValue();
+        yMax = yMaxAux.intValue();
+        yMin = yMinAux.intValue();
+//        int[] minMax = {xMin.intValue(), xMax.intValue(), yMin.intValue(), yMax.intValue()};
+//        return minMax;
+    }
+
+    private static Double normalizeX(double x, int w, int h) {
+        double xn = ((x - xMin) / (xMax - xMin)) * (w - 1);
+        return xn;
+    }
+
+    private static Double normalizeY(double y, int w, int h) {
+        double yn = ((y - yMin) / (yMax - yMin)) * (h - 1);
+        return yn;
     }
 
 }

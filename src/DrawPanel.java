@@ -14,12 +14,12 @@ public class DrawPanel extends JPanel {
   private double yMin;
   private double yMax;
 
-    public DrawPanel(List<Vector3> vectors, int[]minMax){
+    public DrawPanel(List<Vector3> vectors){
         this.vectors = vectors;
-        this.xMin = minMax[0];
-        this.xMax = minMax[1];
-        this.yMin = minMax[2];
-        this.yMax = minMax[3];
+//        this.xMin = minMax[0];
+//        this.xMax = minMax[1];
+//        this.yMin = minMax[2];
+//        this.yMax = minMax[3];
     }
 
     public void paintComponent(Graphics g) {
@@ -35,9 +35,12 @@ public class DrawPanel extends JPanel {
         int h = size.height;
 
         for(Vector3 vector : vectors){
-            int x = normalizeX(vector.getX(), w,h).intValue();
-            int y = normalizeY(vector.getY(),w,h).intValue();
-            g2d.drawLine(x,y,x,y);
+//            System.out.println("entrou");
+//            int x = normalizeX(vector.getX(), w,h).intValue();
+//            int y = normalizeY(vector.getY(),w,h).intValue();
+//            g2d.drawLine(x,y,x,y);
+            g.fillRect((int)vector.getX(),(int)vector.getY(),1,1);
+//            System.out.println(x + ", " + y);
         }
     }
 
