@@ -45,6 +45,10 @@ public class Vector3Operations {
         return this.addition(entry1, negativeEntry2);
     }
 
+    public Vector3 scalarMultiplication(double scalar, Vector3 vector){
+        return new Vector3(vector.getX()*scalar,vector.getY()*scalar, vector.getZ()*scalar);
+    }
+
     public double dotProduct(Vector3 entry1, Vector3 entry2){
         double xProduct = entry1.getX() * entry2.getX();
         double yProduct = entry1.getY() * entry2.getY();
@@ -75,6 +79,20 @@ public class Vector3Operations {
         double py = (barycentricCords.getX() * A.getY()) + (barycentricCords.getY() * B.getY()) + (barycentricCords.getZ() * C.getY());
 
         return new Vector3(px,py,0);
+    }
+
+    public Vector3 orthogonalize(Vector3 v, Vector3 n){
+        double aux1 = this.dotProduct(v,n);
+        double aux2 = this.dotProduct(n,n);
+        Vector3 aux3 = this.scalarMultiplication(aux1/aux2, n);
+        Vector3 result = this.subtraction(v,aux3);
+        return result;
+    }
+
+    public Vector3 getU(Vector3 n, Vector3 v){
+//        Vector3 orthoV = this.orthogonalize(v,n);
+        Vector3 u = this.crossProduct(n, v);
+        return u;
     }
 
     private double triangleArea(Vector3 entry1, Vector3 entry2, Vector3 entry3){
