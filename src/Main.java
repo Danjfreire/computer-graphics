@@ -14,8 +14,9 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Scanner;
 
-public class Part3 {
+public class Main {
 
     private static int xMin;
     private static int xMax;
@@ -52,29 +53,25 @@ public class Part3 {
             e.printStackTrace();
         }
         // load camera params
+        Scanner scan = new Scanner(System.in);
+        JFrame frame = new JFrame("Drawing");
         while (true) {
             ScanLine scanline = new ScanLine();
             CameraParams cameraParams = loadCameraParams();
             Matrix basisChangeMatrix = getBasisChangeMatrix(cameraParams);
             List<Vector3> viewVectors = worldToView(basisChangeMatrix, cameraParams.getC());
             List<Vector3> projectedVectors = projectVectors(cameraParams, viewVectors);
-
             List<Vector3> rasterizedVectors = scanline.rasterize(triangles, projectedVectors, width, height);
-//            System.out.println(rasterizedVectors.size());
-
-//            for(Vector3 v : rasterizedVectors){
-//                System.out.println(v);
-//            }
 
             DrawPanel panel = new DrawPanel(rasterizedVectors);
-            JFrame frame = new JFrame("Drawing");
             frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
             frame.add(panel);
             frame.setSize(width, height);
             frame.setLocationRelativeTo(null);
             frame.setVisible(true);
 
-            break;
+            System.out.println("Press any button + enter to reload camera params");
+            String input = scan.next();
         }
     }
 
