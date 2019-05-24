@@ -30,6 +30,52 @@ public class Main {
     private static int height = 600;
 
     public static void main(String args[]) throws IOException {
+        loadVertices();
+        // load camera params
+        Scanner scan = new Scanner(System.in);
+        JFrame frame = new JFrame("Drawing");
+        while (true) {
+            ScanLine scanline = new ScanLine();
+            CameraParams cameraParams = loadCameraParams();
+            Matrix basisChangeMatrix = getBasisChangeMatrix(cameraParams);
+            List<Vector3> viewVectors = worldToView(basisChangeMatrix, cameraParams.getC());
+            List<Vector3> projectedVectors = projectVectors(cameraParams, viewVectors);
+            List<Vector3> normalizedTriangles = normalizeTriangles(projectedVectors);
+            List<Vector3> rasterizedVectors = scanline.rasterize(triangles, projectedVectors, width, height);
+
+            DrawPanel panel = new DrawPanel(rasterizedVectors);
+            frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+            frame.add(panel);
+            frame.setSize(width, height);
+            frame.setLocationRelativeTo(null);
+            frame.setVisible(true);
+
+            System.out.println("Press any button + enter to reload camera params");
+            String input = scan.next();
+        }
+    }
+
+    private static List<Vector3> normalizeTriangles(List<Vector3> projectedVectors) {
+        Vector3 v1;
+        Vector3 v2;
+        Vector3 v3;
+        List<Vector3> triangleNorms = new ArrayList<>();
+        for (int i = 0; i < triangles.size(); i++) {
+            v1 = projectedVectors.get(triangles.get(i).getV1()-1);
+            v2 = projectedVectors.get(triangles.get(i).getV2()-1);
+            v3 = projectedVectors.get(triangles.get(i).getV3()-1);
+
+            Vector3 aux1 = Vector3Operations.getInstance().subtraction(v2,v1);
+            Vector3 aux2 = Vector3Operations.getInstance().subtraction(v3,v1);
+            Vector3 crossProduct = Vector3Operations.getInstance().crossProduct(aux1,aux2);
+            triangleNorms.add(Vector3Operations.getInstance().normalizeVector(crossProduct));
+//            System.out.println(Vector3Operations.getInstance().normalizeVector(crossProduct));
+        }
+
+        return triangleNorms;
+    }
+
+    private static void loadVertices() {
         BufferedReader reader;
         try {
             reader = new BufferedReader(new FileReader("./src/input/calice2.BYU"));
@@ -51,27 +97,6 @@ public class Main {
             }
         } catch (IOException e) {
             e.printStackTrace();
-        }
-        // load camera params
-        Scanner scan = new Scanner(System.in);
-        JFrame frame = new JFrame("Drawing");
-        while (true) {
-            ScanLine scanline = new ScanLine();
-            CameraParams cameraParams = loadCameraParams();
-            Matrix basisChangeMatrix = getBasisChangeMatrix(cameraParams);
-            List<Vector3> viewVectors = worldToView(basisChangeMatrix, cameraParams.getC());
-            List<Vector3> projectedVectors = projectVectors(cameraParams, viewVectors);
-            List<Vector3> rasterizedVectors = scanline.rasterize(triangles, projectedVectors, width, height);
-
-            DrawPanel panel = new DrawPanel(rasterizedVectors);
-            frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-            frame.add(panel);
-            frame.setSize(width, height);
-            frame.setLocationRelativeTo(null);
-            frame.setVisible(true);
-
-            System.out.println("Press any button + enter to reload camera params");
-            String input = scan.next();
         }
     }
 
