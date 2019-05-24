@@ -3,6 +3,7 @@ import models.CameraParams;
 import models.Matrix;
 import models.Triangle;
 import models.Vector3;
+import operations.ColorCalculator;
 import operations.MatrixOperations;
 import operations.ScanLine;
 import operations.Vector3Operations;
@@ -35,13 +36,14 @@ public class Main {
         Scanner scan = new Scanner(System.in);
         JFrame frame = new JFrame("Drawing");
         while (true) {
-            ScanLine scanline = new ScanLine();
             CameraParams cameraParams = loadCameraParams();
+            ScanLine scanline = new ScanLine(cameraParams.getD(), new ColorCalculator());
             Matrix basisChangeMatrix = getBasisChangeMatrix(cameraParams);
             List<Vector3> viewVectors = worldToView(basisChangeMatrix, cameraParams.getC());
             List<Vector3> projectedVectors = projectVectors(cameraParams, viewVectors);
             List<Vector3> normalizedTriangles = normalizeTriangles(projectedVectors);
-            List<Vector3> rasterizedVectors = scanline.rasterize(triangles, projectedVectors, width, height);
+            List<Vector3> normalizedEdges = normalizeEdges(normalizedTriangles);
+            List<Vector3> rasterizedVectors = scanline.rasterize(triangles, projectedVectors);
 
             DrawPanel panel = new DrawPanel(rasterizedVectors);
             frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -61,18 +63,36 @@ public class Main {
         Vector3 v3;
         List<Vector3> triangleNorms = new ArrayList<>();
         for (int i = 0; i < triangles.size(); i++) {
-            v1 = projectedVectors.get(triangles.get(i).getV1()-1);
-            v2 = projectedVectors.get(triangles.get(i).getV2()-1);
-            v3 = projectedVectors.get(triangles.get(i).getV3()-1);
+            v1 = projectedVectors.get(triangles.get(i).getV1() - 1);
+            v2 = projectedVectors.get(triangles.get(i).getV2() - 1);
+            v3 = projectedVectors.get(triangles.get(i).getV3() - 1);
 
-            Vector3 aux1 = Vector3Operations.getInstance().subtraction(v2,v1);
-            Vector3 aux2 = Vector3Operations.getInstance().subtraction(v3,v1);
-            Vector3 crossProduct = Vector3Operations.getInstance().crossProduct(aux1,aux2);
+            Vector3 aux1 = Vector3Operations.getInstance().subtraction(v2, v1);
+            Vector3 aux2 = Vector3Operations.getInstance().subtraction(v3, v1);
+            Vector3 crossProduct = Vector3Operations.getInstance().crossProduct(aux1, aux2);
             triangleNorms.add(Vector3Operations.getInstance().normalizeVector(crossProduct));
 //            System.out.println(Vector3Operations.getInstance().normalizeVector(crossProduct));
         }
 
         return triangleNorms;
+    }
+
+    private static List<Vector3> normalizeEdges(List<Vector3> normalizedTriangles) {
+        List<Vector3> normalizedEdges = new ArrayList<>();
+        Vector3 sum = new Vector3(0, 0, 0);
+        for (int i = 0; i < vertNum; i++) {
+            for (int t = 0; t < triangles.size(); t++) {
+                if (triangles.get(t).containsEdge(i)) {
+                    sum = Vector3Operations.getInstance().addition(sum,normalizedTriangles.get(t));
+                }
+            }
+            normalizedEdges.add(Vector3Operations.getInstance().normalizeVector(sum));
+            sum.setX(0);
+            sum.setY(0);
+            sum.setZ(0);
+        }
+
+        return normalizedEdges;
     }
 
     private static void loadVertices() {

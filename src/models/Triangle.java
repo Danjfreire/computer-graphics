@@ -11,6 +11,13 @@ public class Triangle {
         this.v3 = v3;
     }
 
+    public boolean containsEdge(int edgeNum) {
+        if(edgeNum == this.v1 || edgeNum == this.v2 || edgeNum == this.v3)
+            return true;
+        else
+            return false;
+    }
+
     public int getV1() {
         return v1;
     }
