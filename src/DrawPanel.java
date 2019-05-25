@@ -1,4 +1,5 @@
 import models.Vector3;
+import operations.ColorCalculator;
 
 import javax.swing.*;
 import java.awt.*;
@@ -8,14 +9,16 @@ import java.util.Random;
 
 public class DrawPanel extends JPanel {
 
-  private List<Vector3> vectors;
-  private double xMin;
-  private double xMax;
-  private double yMin;
-  private double yMax;
+    private List<Vector3> vectors;
+    private Color[][] colors;
+    private double xMin;
+    private double xMax;
+    private double yMin;
+    private double yMax;
 
-    public DrawPanel(List<Vector3> vectors){
+    public DrawPanel(List<Vector3> vectors, Color[][] colors) {
         this.vectors = vectors;
+        this.colors = colors;
 //        this.xMin = minMax[0];
 //        this.xMax = minMax[1];
 //        this.yMin = minMax[2];
@@ -31,26 +34,30 @@ public class DrawPanel extends JPanel {
         g2d.setColor(Color.white);
 
         Dimension size = getSize();
-        int w = size.width ;
+        int w = size.width;
         int h = size.height;
-
-        for(Vector3 vector : vectors){
+        int x;
+        int y;
+        for (Vector3 vector : vectors) {
 //            System.out.println("entrou");
 //            int x = normalizeX(vector.getX(), w,h).intValue();
 //            int y = normalizeY(vector.getY(),w,h).intValue();
 //            g2d.drawLine(x,y,x,y);
-            g.fillRect((int)vector.getX(),(int)vector.getY(),1,1);
+            x = (int) vector.getX();
+            y = (int) vector.getY();
+            g.fillRect(x, y, 1, 1);
+            g.setColor(this.colors[x][y]);
 //            System.out.println(x + ", " + y);
         }
     }
 
-    private Double normalizeX(double x,int w, int h) {
-        double xn = ((x - xMin)/(xMax-xMin)) * (w-1);
+    private Double normalizeX(double x, int w, int h) {
+        double xn = ((x - xMin) / (xMax - xMin)) * (w - 1);
         return xn;
     }
 
-    private Double normalizeY(double y, int w ,int h){
-        double yn = ((y - yMin)/(yMax-yMin)) * (h-1);
+    private Double normalizeY(double y, int w, int h) {
+        double yn = ((y - yMin) / (yMax - yMin)) * (h - 1);
         return yn;
     }
 }

@@ -1,8 +1,5 @@
 import javafx.scene.Camera;
-import models.CameraParams;
-import models.Matrix;
-import models.Triangle;
-import models.Vector3;
+import models.*;
 import operations.ColorCalculator;
 import operations.MatrixOperations;
 import operations.ScanLine;
@@ -27,8 +24,8 @@ public class Main {
     private static int vertNum;
     private static List<Vector3> vectors = new ArrayList<>();
     private static List<Triangle> triangles = new ArrayList<>();
-    private static int width = 600;
-    private static int height = 600;
+    private static int width = 900;
+    private static int height = 900;
 
     public static void main(String args[]) throws IOException {
         loadVertices();
@@ -37,15 +34,16 @@ public class Main {
         JFrame frame = new JFrame("Drawing");
         while (true) {
             CameraParams cameraParams = loadCameraParams();
-            ScanLine scanline = new ScanLine(cameraParams.getD(), new ColorCalculator());
             Matrix basisChangeMatrix = getBasisChangeMatrix(cameraParams);
             List<Vector3> viewVectors = worldToView(basisChangeMatrix, cameraParams.getC());
             List<Vector3> projectedVectors = projectVectors(cameraParams, viewVectors);
             List<Vector3> normalizedTriangles = normalizeTriangles(projectedVectors);
             List<Vector3> normalizedEdges = normalizeEdges(normalizedTriangles);
+            ColorCalculator colorCalc = new ColorCalculator(normalizedEdges, new ColorParams(), width,height);
+            ScanLine scanline = new ScanLine(cameraParams.getD(), colorCalc);
             List<Vector3> rasterizedVectors = scanline.rasterize(triangles, projectedVectors);
 
-            DrawPanel panel = new DrawPanel(rasterizedVectors);
+            DrawPanel panel = new DrawPanel(rasterizedVectors,colorCalc.getColors());
             frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
             frame.add(panel);
             frame.setSize(width, height);
