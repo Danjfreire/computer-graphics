@@ -36,12 +36,11 @@ public class DrawPanel extends JPanel {
         Dimension size = getSize();
         int w = size.width;
         int h = size.height;
-        int x;
-        int y;
+//        int x;
+//        int y;
         for (Vector3 vector : vectors) {
-//            System.out.println("entrou");
-//            int x = normalizeX(vector.getX(), w,h).intValue();
-//            int y = normalizeY(vector.getY(),w,h).intValue();
+            int x = normalizeX(vector.getX(), w,h).intValue();
+            int y = normalizeY(vector.getY(),w,h).intValue();
 //            g2d.drawLine(x,y,x,y);
             x = (int) vector.getX();
             y = (int) vector.getY();

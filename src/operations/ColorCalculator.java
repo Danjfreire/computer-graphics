@@ -30,7 +30,7 @@ public class ColorCalculator {
         Vector3 N = getN(barycentricCord, triangle);
 
 
-        Vector3 V = Vector3Operations.getInstance().scalarMultiplication(1, P);
+        Vector3 V = Vector3Operations.getInstance().scalarMultiplication(-1, P);
         V = Vector3Operations.getInstance().normalizeVector(V);
 //        System.out.println(P);
 
@@ -38,21 +38,25 @@ public class ColorCalculator {
         L = Vector3Operations.getInstance().normalizeVector(L);
 
         double prodNL = Vector3Operations.getInstance().dotProduct(N, L);
-        double prodNV = Vector3Operations.getInstance().dotProduct(N, V);
+        double prodVN = Vector3Operations.getInstance().dotProduct(V, N);
         boolean hasId = true;
         boolean hasIs = true;
 
         if (prodNL < 0) {
-            if (prodNV < 0) {
+            if (prodVN < 0) {
+//                System.out.println("Inverteu N");
                 N = Vector3Operations.getInstance().scalarMultiplication(-1, N);
                 prodNL = Vector3Operations.getInstance().dotProduct(N, L);
+//                prodVN = Vector3Operations.getInstance().dotProduct(V,N);
             } else {
                 hasId = false;
                 hasIs = false;
             }
         }
-        Vector3 aux = Vector3Operations.getInstance().scalarMultiplication(2 * prodNL, N);
+        double NL2 = 2 * prodNL;
+        Vector3 aux = Vector3Operations.getInstance().scalarMultiplication(NL2, N);
         Vector3 R = Vector3Operations.getInstance().subtraction(aux, L);
+
 
         double prodRV = Vector3Operations.getInstance().dotProduct(R, V);
 
@@ -137,7 +141,7 @@ public class ColorCalculator {
 
         Vector3 N = new Vector3(nx, ny, nz);
         N = Vector3Operations.getInstance().normalizeVector(N);
-        System.out.println(N);
+//        System.out.println(N);
         return N;
     }
 
