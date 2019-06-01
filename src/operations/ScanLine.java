@@ -12,19 +12,24 @@ import java.util.List;
 
 public class ScanLine {
 
+    private List<Vector3> originalVertices;
+    private int width;
+    private int height;
     private double[][] zbuffer;
     private double cameraD;
-    private Triangle currentTri;
     private ColorCalculator color;
+    private Triangle currentTri;
 
-    public ScanLine(double cameraD, ColorCalculator color) {
+    public ScanLine(List<Vector3> originalVertices,double cameraD, ColorCalculator color, int width, int height) {
+        this.originalVertices = originalVertices;
+        this.width = width;
+        this.height = height;
         this.cameraD = cameraD;
         this.color = color;
+        this.startZbuffer(width, height);
     }
 
     public List<Vector3> rasterize(List<Triangle> triangles, List<Vector3> projectedVectors) {
-        this.zbuffer = new double[projectedVectors.size()][projectedVectors.size()];
-        this.startZbuffer();
         List<Vector3> result = new ArrayList<>();
 
         for (Triangle t : triangles) {
@@ -40,6 +45,8 @@ public class ScanLine {
             v2.setZ(cameraD);
             Vector3 v3 = vectors.get(2);
             v3.setZ(cameraD);
+
+            System.out.println(v1.getY() + ", " + v2.getY() + ", " + v3.getY());
 
             if (v2.getY() == v3.getY()) {
                 bottomFlatTriangle(v1, v2, v3, result);
@@ -69,16 +76,18 @@ public class ScanLine {
         double xMin = v1.getX();
         double xMax = v1.getX();
 
-        for (double scan = v1.getY(); scan <= v3.getY(); scan++) {
-            double aux = xMin;
-            while (aux <= xMax) {
-                Vector3 barycentricCord = Vector3Operations.getInstance().barycentricCoordinates(new Vector3(aux, scan, this.cameraD), v1, v2, v3);
-                Vector3 originalP = getOriginalP(barycentricCord, v1, v2, v3);
-                if (originalP.getZ() < zbuffer[(int) aux][(int) scan]) {
-                    zbuffer[(int) aux][(int)scan] = originalP.getZ();
-                    Color c = color.calculate(barycentricCord, currentTri, originalP);
-                    color.setColor(c, (int) aux, (int) scan);
-                    result.add(new Vector3(aux, scan, 0));
+        for (double scan = v1.getY() +0.5; scan <= v3.getY(); scan++) {
+            double aux = xMin + 0.5;
+            while (aux <= xMax + 0.5) {
+                if(aux >= 0 && aux < this.width && scan >= 0 && scan < this.height) {
+                    Vector3 barycentricCord = Vector3Operations.getInstance().barycentricCoordinates(new Vector3(aux, scan, this.cameraD), v1, v2, v3);
+                    Vector3 originalP = getOriginalP(barycentricCord);
+                    if (originalP.getZ() < zbuffer[(int) aux][(int) scan]) {
+                        zbuffer[(int) aux][(int) scan] = originalP.getZ();
+                        Color c = color.calculate(barycentricCord, currentTri, originalP);
+                        color.setColor(c, (int) aux, (int) scan);
+                        result.add(new Vector3(aux, scan, 0));
+                    }
                 }
                 aux++;
             }
@@ -101,16 +110,24 @@ public class ScanLine {
         double xMin = v3.getX();
         double xMax = v3.getX();
 
-        for (double scan = v3.getY(); scan >= v2.getY(); scan--) {
-            double aux = xMin;
-            while (aux <= xMax) {
-                Vector3 barycentricCord = Vector3Operations.getInstance().barycentricCoordinates(new Vector3(aux, scan, this.cameraD), v1, v2, v3);
-                Vector3 originalP = getOriginalP(barycentricCord, v1, v2, v3);
-                if (originalP.getZ() < zbuffer[(int) aux][(int) scan]) {
-                    zbuffer[(int) aux][(int)scan] = originalP.getZ();
-                    Color c = color.calculate(barycentricCord, currentTri, originalP);
-                    color.setColor(c, (int) aux, (int) scan);
-                    result.add(new Vector3(aux, scan, 0));
+        for (double scan = v3.getY() + 0.5; scan >= v2.getY(); scan--) {
+            double aux = xMin + 0.5;
+            while (aux <= xMax + 0.5) {
+                if(aux >= 0 && aux < this.width && scan >= 0 && scan < this.height) {
+                    Vector3 P = new Vector3(aux, scan, this.cameraD);
+                    Vector3 barycentricCord = Vector3Operations.getInstance().barycentricCoordinates(P, v1, v2, v3);
+//                System.out.print(v1);
+//                System.out.print(v2);
+//                System.out.print(v3);
+//                System.out.print(P);
+//                System.out.println("   -   " + barycentricCord);
+                    Vector3 originalP = getOriginalP(barycentricCord);
+                    if (originalP.getZ() < zbuffer[(int) aux][(int) scan]) {
+                        zbuffer[(int) aux][(int) scan] = originalP.getZ();
+                        Color c = color.calculate(barycentricCord, currentTri, originalP);
+                        color.setColor(c, (int) aux, (int) scan);
+                        result.add(new Vector3(aux, scan, 0));
+                    }
                 }
                 aux++;
             }
@@ -119,7 +136,8 @@ public class ScanLine {
         }
     }
 
-    private void startZbuffer() {
+    private void startZbuffer(int width, int height) {
+        this.zbuffer = new double[width][height];
         for (int i = 0; i < this.zbuffer.length; i++) {
             for (int j = 0; j < this.zbuffer[i].length; j++) {
                 this.zbuffer[i][j] = Double.MAX_VALUE;
@@ -127,7 +145,40 @@ public class ScanLine {
         }
     }
 
-    private Vector3 getOriginalP(Vector3 barycentricCord, Vector3 v1, Vector3 v2, Vector3 v3) {
+    private Vector3 getOriginalP(Vector3 barycentricCord) {
+
+        double v1x = barycentricCord.getX() * this.originalVertices.get(this.currentTri.getV1()-1).getX();
+        double v1y = barycentricCord.getX() * this.originalVertices.get(this.currentTri.getV1()-1).getY();
+        double v1z = barycentricCord.getX() * this.originalVertices.get(this.currentTri.getV1()-1).getZ();
+
+//        Vector3 v1 = new Vector3(v1x,v1y,v1z);
+
+
+        double v2x = barycentricCord.getY() * this.originalVertices.get(this.currentTri.getV2()-1).getX();
+        double v2y = barycentricCord.getY() * this.originalVertices.get(this.currentTri.getV2()-1).getY();
+        double v2z = barycentricCord.getY() * this.originalVertices.get(this.currentTri.getV2()-1).getZ();
+
+//        Vector3 v2 = new Vector3(v2x,v2y,v2z);
+
+        double v3x = barycentricCord.getZ() * this.originalVertices.get(this.currentTri.getV3()-1).getX();
+        double v3y = barycentricCord.getZ() * this.originalVertices.get(this.currentTri.getV3()-1).getY();
+        double v3z = barycentricCord.getZ() * this.originalVertices.get(this.currentTri.getV3()-1).getZ();
+
+//        Vector3 v3 = new Vector3(v3x,v3y,v3z);
+
+        double x = v1x + v2x + v3x;
+        double y = v1y + v2y + v3y;
+        double z = v1z + v2z + v3z;
+
+//        Vector3 alfav1 = Vector3Operations.getInstance().scalarMultiplication(barycentricCord.getX(), v1);
+//        Vector3 betav2 = Vector3Operations.getInstance().scalarMultiplication(barycentricCord.getY(), v2);
+//        Vector3 gamav3 = Vector3Operations.getInstance().scalarMultiplication(barycentricCord.getZ(), v3);
+
+
+        return new Vector3(x, y, z);
+    }
+
+    private Vector3 getOriginalP2(Vector3 barycentricCord, Vector3 v1, Vector3 v2, Vector3 v3) {
 
         Vector3 alfaP1 = Vector3Operations.getInstance().scalarMultiplication(barycentricCord.getX(), v1);
         Vector3 betaP2 = Vector3Operations.getInstance().scalarMultiplication(barycentricCord.getY(), v2);
@@ -139,6 +190,5 @@ public class ScanLine {
 
         return new Vector3(px, py, pz);
     }
-
 
 }

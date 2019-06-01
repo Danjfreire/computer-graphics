@@ -29,7 +29,8 @@ public class ColorCalculator {
 
         Vector3 N = getN(barycentricCord, triangle);
 
-        Vector3 V = Vector3Operations.getInstance().scalarMultiplication(-1, P);
+
+        Vector3 V = Vector3Operations.getInstance().scalarMultiplication(1, P);
         V = Vector3Operations.getInstance().normalizeVector(V);
 //        System.out.println(P);
 
@@ -45,7 +46,6 @@ public class ColorCalculator {
             if (prodNV < 0) {
                 N = Vector3Operations.getInstance().scalarMultiplication(-1, N);
                 prodNL = Vector3Operations.getInstance().dotProduct(N, L);
-                prodNV = Vector3Operations.getInstance().dotProduct(N, V);
             } else {
                 hasId = false;
                 hasIs = false;
@@ -53,7 +53,7 @@ public class ColorCalculator {
         }
         Vector3 aux = Vector3Operations.getInstance().scalarMultiplication(2 * prodNL, N);
         Vector3 R = Vector3Operations.getInstance().subtraction(aux, L);
-        
+
         double prodRV = Vector3Operations.getInstance().dotProduct(R, V);
 
         if (prodRV < 0) {
@@ -137,6 +137,7 @@ public class ColorCalculator {
 
         Vector3 N = new Vector3(nx, ny, nz);
         N = Vector3Operations.getInstance().normalizeVector(N);
+        System.out.println(N);
         return N;
     }
 

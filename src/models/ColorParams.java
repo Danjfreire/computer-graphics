@@ -2,12 +2,12 @@ package models;
 
 public class ColorParams {
 
-    private Vector3 Iamb = new Vector3(255,200,0);
-    private double Ka = 0.3;
-    private Vector3 Il = new Vector3(50,213,254);
-    private Vector3 Pl = new Vector3(120,30,0);
-    private Vector3 Kd = new Vector3(0.5,0.4,0.2);
-    private Vector3 Od = new Vector3(0.7,0.5,0.9);
+    private Vector3 Iamb = new Vector3(100,100,100);
+    private double Ka = 0.2;
+    private Vector3 Il = new Vector3(127,213,254);
+    private Vector3 Pl = new Vector3(60,5,-10);
+    private Vector3 Kd = new Vector3(0.5,0.3,0.2);
+    private Vector3 Od = new Vector3(0.7,0.5,0.8);
     private double Ks = 0.5;
     private double eta = 1;
 

@@ -40,7 +40,7 @@ public class Main {
             List<Vector3> normalizedTriangles = normalizeTriangles(projectedVectors);
             List<Vector3> normalizedEdges = normalizeEdges(normalizedTriangles);
             ColorCalculator colorCalc = new ColorCalculator(normalizedEdges, new ColorParams(), width,height);
-            ScanLine scanline = new ScanLine(cameraParams.getD(), colorCalc);
+            ScanLine scanline = new ScanLine(viewVectors,cameraParams.getD(), colorCalc, width, height);
             List<Vector3> rasterizedVectors = scanline.rasterize(triangles, projectedVectors);
 
             DrawPanel panel = new DrawPanel(rasterizedVectors,colorCalc.getColors());
@@ -69,7 +69,6 @@ public class Main {
             Vector3 aux2 = Vector3Operations.getInstance().subtraction(v3, v1);
             Vector3 crossProduct = Vector3Operations.getInstance().crossProduct(aux1, aux2);
             triangleNorms.add(Vector3Operations.getInstance().normalizeVector(crossProduct));
-//            System.out.println(Vector3Operations.getInstance().normalizeVector(crossProduct));
         }
 
         return triangleNorms;
@@ -80,7 +79,7 @@ public class Main {
         Vector3 sum = new Vector3(0, 0, 0);
         for (int i = 0; i < vertNum; i++) {
             for (int t = 0; t < triangles.size(); t++) {
-                if (triangles.get(t).containsEdge(i)) {
+                if (triangles.get(t).containsEdge(i+1)) {
                     sum = Vector3Operations.getInstance().addition(sum,normalizedTriangles.get(t));
                 }
             }
@@ -96,7 +95,7 @@ public class Main {
     private static void loadVertices() {
         BufferedReader reader;
         try {
-            reader = new BufferedReader(new FileReader("./src/input/calice2.BYU"));
+            reader = new BufferedReader(new FileReader("./src/input/vaso.BYU"));
             String line = reader.readLine();
             String[] line1 = line.split(" ");
             vertNum = Integer.parseInt(line1[0]);
