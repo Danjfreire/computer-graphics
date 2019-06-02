@@ -49,10 +49,10 @@ public class Vector3 implements Comparable<Vector3>{
     @Override
     public int compareTo(Vector3 v2) {
         if(this.getY() < v2.getY()){
-            return -1;
+            return 1;
         }
         if(this.getY() > v2.getY()){
-            return 1;
+            return -1;
         }
         return 0;
     }

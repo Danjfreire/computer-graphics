@@ -24,8 +24,8 @@ public class Main {
     private static int vertNum;
     private static List<Vector3> vectors = new ArrayList<>();
     private static List<Triangle> triangles = new ArrayList<>();
-    private static int width = 700;
-    private static int height = 700;
+    private static int width = 900;
+    private static int height = 900;
 
     public static void main(String args[]) throws IOException {
         loadVertices();
@@ -34,12 +34,13 @@ public class Main {
         JFrame frame = new JFrame("Drawing");
         while (true) {
             CameraParams cameraParams = loadCameraParams();
+            ColorParams colorParams = loadColorParams();
             Matrix basisChangeMatrix = getBasisChangeMatrix(cameraParams);
             List<Vector3> viewVectors = worldToView(basisChangeMatrix, cameraParams.getC());
-            List<Vector3> projectedVectors = projectVectors(cameraParams, viewVectors);
-            List<Vector3> normalizedTriangles = normalizeTriangles(projectedVectors);
+            List<Vector3> normalizedTriangles = normalizeTriangles(viewVectors);
             List<Vector3> normalizedEdges = normalizeEdges(normalizedTriangles);
-            ColorCalculator colorCalc = new ColorCalculator(normalizedEdges, new ColorParams(), width,height);
+            List<Vector3> projectedVectors = projectVectors(cameraParams, viewVectors);
+            ColorCalculator colorCalc = new ColorCalculator(normalizedEdges, colorParams, width,height);
             ScanLine scanline = new ScanLine(viewVectors,cameraParams.getD(), colorCalc, width, height);
             List<Vector3> rasterizedVectors = scanline.rasterize(triangles, projectedVectors);
 
@@ -53,6 +54,28 @@ public class Main {
             System.out.println("Press any button + enter to reload camera params");
             String input = scan.next();
         }
+    }
+
+    private static CameraParams loadCameraParams() throws IOException {
+        CameraParams cParams = new CameraParams();
+        BufferedReader reader = new BufferedReader(new FileReader("./src/camera-input/input.txt"));
+        String line = reader.readLine();
+        while (line != null) {
+            cParams.addParam(line);
+            line = reader.readLine();
+        }
+        return cParams;
+    }
+
+    private static ColorParams loadColorParams() throws IOException {
+        ColorParams colorParams = new ColorParams();
+        BufferedReader reader = new BufferedReader(new FileReader("./src/color-input/input.txt"));
+        String line = reader.readLine();
+        while(line != null){
+            colorParams.addParam(line);
+            line = reader.readLine();
+        }
+        return colorParams;
     }
 
     private static List<Vector3> normalizeTriangles(List<Vector3> projectedVectors) {
@@ -95,7 +118,7 @@ public class Main {
     private static void loadVertices() {
         BufferedReader reader;
         try {
-            reader = new BufferedReader(new FileReader("./src/input/calice2.BYU"));
+            reader = new BufferedReader(new FileReader("./src/input/maca2.BYU"));
             String line = reader.readLine();
             String[] line1 = line.split(" ");
             vertNum = Integer.parseInt(line1[0]);
@@ -171,17 +194,6 @@ public class Main {
         m1.setRow(normN, 2);
 
         return m1;
-    }
-
-    private static CameraParams loadCameraParams() throws IOException {
-        CameraParams cParams = new CameraParams();
-        BufferedReader reader = new BufferedReader(new FileReader("./src/camera-input/input.txt"));
-        String line = reader.readLine();
-        while (line != null) {
-            cParams.addParam(line);
-            line = reader.readLine();
-        }
-        return cParams;
     }
 
     private static void findMinMax(List<Vector3> vectors) {

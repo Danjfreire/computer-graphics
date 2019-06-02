@@ -56,7 +56,7 @@ public class ScanLine {
                 double aux = v1.getX() + ((v2.getY() - v1.getY()) / (v3.getY() - v1.getY()) * (v3.getX() - v1.getX()));
                 Vector3 v4 = new Vector3(aux, vectors.get(1).getY(), 0);
                 topFlatTriangle(v1, v2, v4, result);
-                bottomFlatTriangle(v2, v4, v3, result);
+                bottomFlatTriangle(v4, v2, v3, result);
             }
         }
         return result;
@@ -66,17 +66,22 @@ public class ScanLine {
         double slopeMin;
         double slopeMax;
         if (v2.getX() >= v1.getX()) {
-            slopeMin = (v3.getY() - v1.getY()) / (v3.getX() - v1.getX());
-            slopeMax = (v2.getY() - v1.getY()) / (v2.getX() - v1.getX());
+//            slopeMin = (v3.getY() - v1.getY()) / (v3.getX() - v1.getX());
+//            slopeMax = (v2.getY() - v1.getY()) / (v2.getX() - v1.getX());
+            slopeMin = (v1.getX() - v3.getX())/ (v1.getY()-v3.getY());
+            slopeMax = (v1.getX() - v2.getX())/ (v1.getY()-v2.getY());
         } else {
-            slopeMin = (v2.getY() - v1.getY()) / (v2.getX() - v1.getX());
-            slopeMax = (v3.getY() - v1.getY()) / (v3.getX() - v1.getX());
+            slopeMin = (v1.getX() - v2.getX())/ (v1.getY()-v2.getY());
+            slopeMax = (v1.getX() - v3.getX())/ (v1.getY()-v3.getY());
+//            slopeMin = (v2.getY() - v1.getY()) / (v2.getX() - v1.getX());
+//            slopeMax = (v3.getY() - v1.getY()) / (v3.getX() - v1.getX());
         }
+
 
         double xMin = v1.getX();
         double xMax = v1.getX();
 
-        for (double scan = v1.getY() ; scan <= v3.getY(); scan++) {
+        for (double scan = v1.getY() ; scan >= v3.getY(); scan--) {
             double aux = xMin;
             while (aux <= xMax) {
                 if(aux >= 0 && aux < this.width && scan >= 0 && scan < this.height) {
@@ -92,8 +97,8 @@ public class ScanLine {
                 }
                 aux++;
             }
-            xMin += (1.0 / slopeMin);
-            xMax += (1.0 / slopeMax);
+            xMin -= slopeMin;
+            xMax -= slopeMax;
         }
     }
 
@@ -101,19 +106,24 @@ public class ScanLine {
         double slopeMin;
         double slopeMax;
         if (v2.getX() >= v1.getX()) {
-            slopeMin = (v1.getY() - v3.getY()) / (v1.getX() - v3.getX());
-            slopeMax = (v2.getY() - v3.getY()) / (v2.getX() - v3.getX());
+//            slopeMin = (v1.getY() - v3.getY()) / (v1.getX() - v3.getX());
+//            slopeMax = (v2.getY() - v3.getY()) / (v2.getX() - v3.getX());
+            slopeMin = (v1.getX() - v3.getX())/(v1.getY() - v3.getY());
+            slopeMax = (v2.getX() - v3.getX())/(v2.getY() - v3.getY());
         } else {
-            slopeMin = (v2.getY() - v3.getY()) / (v2.getX() - v3.getX());
-            slopeMax = (v1.getY() - v3.getY()) / (v1.getX() - v3.getX());
+            slopeMin = (v2.getX() - v3.getX())/(v2.getY() - v3.getY());
+            slopeMax = (v1.getX() - v3.getX())/(v1.getY() - v3.getY());
+//            slopeMin = (v2.getY() - v3.getY()) / (v2.getX() - v3.getX());
+//            slopeMax = (v1.getY() - v3.getY()) / (v1.getX() - v3.getX());
         }
+
 
         double xMin = v3.getX();
         double xMax = v3.getX();
 
-        for (double scan = v3.getY(); scan >= (int)v2.getY() + 0.5; scan--) {
-            double aux = xMin +0.5;
-            while (aux <= xMax +0.5) {
+        for (double scan = v3.getY(); scan <= (int)v2.getY(); scan++) {
+            double aux = xMin;
+            while (aux <= xMax) {
                 if(aux >= 0 && aux < this.width && scan >= 0 && scan < this.height) {
                     Vector3 P = new Vector3(aux, scan, this.cameraD);
                     Vector3 barycentricCord = Vector3Operations.getInstance().barycentricCoordinates(P, v1, v2, v3);
@@ -127,8 +137,8 @@ public class ScanLine {
                 }
                 aux++;
             }
-            xMin -= (1.0 / slopeMin);
-            xMax -= (1.0 / slopeMax);
+            xMin += slopeMin;
+            xMax += slopeMax;
         }
     }
 

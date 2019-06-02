@@ -29,8 +29,8 @@ public class ColorCalculator {
 
         Vector3 N = getN(barycentricCord, triangle);
 
-
-        Vector3 V = Vector3Operations.getInstance().scalarMultiplication(-1, P);
+        Vector3 minusP = Vector3Operations.getInstance().scalarMultiplication(-1, P);
+        Vector3 V = minusP;
         V = Vector3Operations.getInstance().normalizeVector(V);
 //        System.out.println(P);
 
