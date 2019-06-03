@@ -85,7 +85,7 @@ public class ScanLine {
             double aux = xMin;
             while (aux <= xMax) {
                 if(aux >= 0 && aux < this.width && scan >= 0 && scan < this.height) {
-                    Vector3 P = new Vector3(aux, scan, this.cameraD);
+                    Vector3 P = new Vector3(aux, scan, 0);
                     Vector3 barycentricCord = Vector3Operations.getInstance().barycentricCoordinates(P, v1, v2, v3);
                     Vector3 originalP = getOriginalP(barycentricCord);
                     if (originalP.getZ() < zbuffer[(int) aux][(int) scan]) {
@@ -121,11 +121,11 @@ public class ScanLine {
         double xMin = v3.getX();
         double xMax = v3.getX();
 
-        for (double scan = v3.getY(); scan <= (int)v2.getY(); scan++) {
+        for (double scan = v3.getY(); scan <= v2.getY(); scan++) {
             double aux = xMin;
             while (aux <= xMax) {
                 if(aux >= 0 && aux < this.width && scan >= 0 && scan < this.height) {
-                    Vector3 P = new Vector3(aux, scan, this.cameraD);
+                    Vector3 P = new Vector3(aux, scan, 0);
                     Vector3 barycentricCord = Vector3Operations.getInstance().barycentricCoordinates(P, v1, v2, v3);
                     Vector3 originalP = getOriginalP(barycentricCord);
                     if (originalP.getZ() < zbuffer[(int) aux][(int) scan]) {

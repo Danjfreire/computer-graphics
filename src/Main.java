@@ -24,8 +24,8 @@ public class Main {
     private static int vertNum;
     private static List<Vector3> vectors = new ArrayList<>();
     private static List<Triangle> triangles = new ArrayList<>();
-    private static int width = 900;
-    private static int height = 900;
+    private static int width = 600;
+    private static int height = 600;
 
     public static void main(String args[]) throws IOException {
         loadVertices();
@@ -118,7 +118,7 @@ public class Main {
     private static void loadVertices() {
         BufferedReader reader;
         try {
-            reader = new BufferedReader(new FileReader("./src/input/maca2.BYU"));
+            reader = new BufferedReader(new FileReader("./src/input/calice2.BYU"));
             String line = reader.readLine();
             String[] line1 = line.split(" ");
             vertNum = Integer.parseInt(line1[0]);

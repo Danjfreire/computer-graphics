@@ -68,41 +68,41 @@ public class Vector3Operations {
 
     public Vector3 barycentricCoordinates(Vector3 P, Vector3 A, Vector3 B, Vector3 C) {
 
-        double alpha;
-        double beta;
-        double gama;
-
-        double a, b, c, d, e, f;
-
-        //| a  b|
-        //| c  d|
-
-        a = A.getX() - C.getX();
-        b = B.getX() - C.getX();
-        c = A.getY() - C.getY();
-        d = B.getY() - C.getY();
-
-        e = P.getX() - C.getX();
-        f = P.getY() - C.getY();
-
-        double det = (a * d - b * c);
-
-        a = d / det;
-        b = (-b) / det;
-        c = (-c) / det;
-        d = a / det;
-
-        alpha = a * e + b * f;
-        beta = c * e + d * f;
-        gama = 1 - alpha - beta;
-
-
-//        double abcArea = triangleArea(A,B,C);
-//        double u = triangleArea(P,B,C)/abcArea;
-//        double v = triangleArea(A,P,C)/abcArea;
-//        double w = triangleArea(A,B,P)/abcArea;
+//        double alpha;
+//        double beta;
+//        double gama;
 //
-        return new Vector3(alpha, beta, gama);
+//        double a, b, c, d, e, f;
+//
+//        //| a  b|
+//        //| c  d|
+//
+//        a = A.getX() - C.getX();
+//        b = B.getX() - C.getX();
+//        c = A.getY() - C.getY();
+//        d = B.getY() - C.getY();
+//
+//        e = P.getX() - C.getX();
+//        f = P.getY() - C.getY();
+//
+//        double det = (a * d - b * c);
+//
+//        a = d / det;
+//        b = (-b) / det;
+//        c = (-c) / det;
+//        d = a / det;
+//
+//        alpha = a * e + b * f;
+//        beta = c * e + d * f;
+//        gama = 1 - alpha - beta;
+
+
+        double abcArea = Math.abs(triangleArea(A,B,C));
+        double u = Math.abs(triangleArea(P,B,C))/abcArea;
+        double v = Math.abs(triangleArea(A,P,C))/abcArea;
+        double w = Math.abs(triangleArea(A,B,P))/abcArea;
+//
+        return new Vector3(u, v, w);
     }
 
     public Vector3 barycentricReverse(Vector3 barycentricCords, Vector3 A, Vector3 B, Vector3 C) {
